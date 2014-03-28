@@ -16,15 +16,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   config.vm.network "forwarded_port", guest: 80, host: 8080
 
+  config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder "www", "/var/www/docroot", type: "rsync", rsync__exclude: ".git/"
+  config.vm.synced_folder "www_uploads", "/var/www/docroot/wordpress/wp-content/upload", owner: "www-data"
+
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+    config.cache.auto_detect = true
+  end
+
+  if Vagrant.has_plugin?("vagrant-omnibus")
+    config.omnibus.chef_version = :latest
+  end
+
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
   # some recipes and/or roles.
   #
   config.vm.provision "chef_solo" do |chef|
     chef.node_name = "mywebapp"
-    chef.cookbooks_path = ["cookbooks", "vendor/cookbooks"]
+    chef.cookbooks_path = [ "cookbooks", "vendor/cookbooks" ]
     chef.roles_path = "roles"
-    chef.add_role "default"
+    chef.add_role("mywebapp")
 
     chef.json = {
       :mywebapp => {
@@ -34,15 +47,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       }
     }
   end
-
-  config.vm.synced_folder "www", "/var/www/docroot", type: "rsync", rsync__exclude: ".git/"
-
-  if Vagrant.has_plugin?("vagrant-cachier")
-    config.cache.scope = :box
-  end
-
-  if Vagrant.has_plugin?("vagrant-omnibus")
-    config.omnibus.chef_version = :latest
-  end
-
 end
