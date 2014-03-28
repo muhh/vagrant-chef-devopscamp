@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder ".", "/vagrant"
   config.vm.synced_folder "www", "/var/www/docroot", type: "rsync", rsync__exclude: ".git/"
-  config.vm.synced_folder "www_uploads", "/var/www/docroot/wordpress/wp-content/upload", owner: "www-data"
+  #config.vm.synced_folder "www_uploads", "/var/www/docroot/wordpress/wp-content/upload", owner: "www-data"
 
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
